@@ -82,3 +82,47 @@ pip install -r requirements.txt
 python3 autonomous_client.py
 ```
 3. Watch as the simple **"Check Weather"** intent organically routes straight through, while the **"Delete legacy metrics"** intent aggressively hangs on the socket—requiring you to authenticate natively on the `localhost:3000` SOC Dashboard to inject your cryptographic authorization seal.
+
+---
+
+## 🔌 Connecting Your Custom Agents (LangChain, AutoGPT, etc.)
+
+Connecting your own autonomous framework to the Aegis Proxy is incredibly simple. Instead of your agent executing a sensitive action or tool directly, you inject a single network request to the Aegis Gateway to mathematically ask for permission. 
+
+### Implementation Guide (Python)
+
+Whenever your agent decides it needs to perform an action, build a JSON payload detailing its intent, and `POST` it to the Gateway with a long timeout (to account for the human-in-the-loop delay). 
+
+```python
+import requests
+
+AEGIS_GATEWAY = "http://localhost:3001/proxy/execute"
+
+def execute_agent_tool(action_name, target_data, agent_reasoning):
+    payload = {
+        "agent_id": "my-production-agent-01",
+        "action": action_name,
+        "target": target_data,
+        "reasoning": agent_reasoning
+    }
+
+    try:
+        # NOTE: Set a high timeout. If the AI intent is flagged as destructive, 
+        # Aegis will aggressively suspend the socket until a human SOC analyst
+        # opens the dashboard and authenticates heavily via Auth0!
+        response = requests.post(AEGIS_GATEWAY, json=payload, timeout=300)
+        
+        if response.status_code == 200:
+            vault_token = response.json().get("auth0_vault_delegation")
+            print(f"✅ Approved. Executing tool using secure Vault Token: {vault_token}...")
+            return True
+
+        elif response.status_code == 403:
+            print("❌ Action Rejected by SOC Analyst.")
+            # For LangChain/LlamaIndex, simply return this string to the LLM 
+            # so it knows to adjust its plan and try a non-destructive method!
+            return False
+
+    except requests.exceptions.Timeout:
+        print("⏰ Timed out waiting for SOC approval.")
+```
