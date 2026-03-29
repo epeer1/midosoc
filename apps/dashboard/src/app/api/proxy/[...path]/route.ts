@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 async function proxyRequest(req: Request, path: string[], method: string) {
   const targetPath = path.join('/');
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const apiUrl = process.env.PROXY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   try {
     // Use ADMIN_SECRET when auth is skipped or in development

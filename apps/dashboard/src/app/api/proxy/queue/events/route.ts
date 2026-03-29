@@ -4,7 +4,7 @@ import { auth0 } from '@/lib/auth0';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const apiUrl = process.env.PROXY_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   let token: string | null = null;
 

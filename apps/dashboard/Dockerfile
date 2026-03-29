@@ -4,6 +4,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+
+# NEXT_PUBLIC_ vars must be set at build time — they get baked into the JS bundle
+ARG NEXT_PUBLIC_SKIP_AUTH=true
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_SKIP_AUTH=$NEXT_PUBLIC_SKIP_AUTH
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 RUN npm run build
 
 FROM node:20-alpine AS runner
