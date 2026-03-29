@@ -36,3 +36,10 @@ __pycache__/
 
 # audit data
 apps/proxy/data/
+
+# agent config
+.agent/
+
+# internal tooling
+scripts/pipelines/
+docs/
