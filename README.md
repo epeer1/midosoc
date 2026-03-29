@@ -2,6 +2,8 @@
 
 **[📺 Watch the Hackathon Demo Video on YouTube](https://www.youtube.com/watch?v=9IYZJI6JA5E)**
 
+**[🚀 Live Demo — Sign in with Google](https://midosoc-dashboard-693775682816.us-central1.run.app)**
+
 Midosoc is a security middlebox that sits between autonomous AI agents (LangChain, AutoGPT, custom LLM tools, etc.) and the actions they want to execute. It enforces human-in-the-loop authorization for destructive operations using a real-time SOC analyst dashboard. Safe actions pass through instantly. Destructive actions are suspended—socket held open in memory—until a human approves or denies them through the dashboard, at which point an Auth0 M2M vault token is issued and returned to the agent.
 
 ---
@@ -95,7 +97,7 @@ midosoc/
 │   │
 │   └── dashboard/                  # Next.js SOC analyst dashboard (:3000)
 │       └── src/
-│           ├── proxy.ts                    # Auth0 middleware (Next.js 16 proxy file)
+│           ├── middleware.ts                # Auth0 middleware (Next.js middleware)
 │           ├── app/
 │           │   ├── page.tsx                # Main SOC dashboard page
 │           │   ├── layout.tsx              # Root layout (Geist fonts, metadata)
@@ -118,17 +120,11 @@ midosoc/
 │               └── utils.ts                # cn() utility (clsx + tailwind-merge)
 │
 ├── scripts/
-│   ├── simulator/
-│   │   ├── autonomous_client.py    # Python agent: safe + destructive payloads
-│   │   └── requirements.txt
-│   └── pipelines/
-│       ├── hackathon_pipeline.py   # Multi-model ideation pipeline (separate tool)
-│       └── README.md
-│
-├── docs/
-│   ├── CHANGES.md                  # Sprint changelog with testing guide
-│   ├── hackathon/                  # Hackathon planning and pitch docs
-│   └── reviews/                    # Architecture review notes
+│   └── simulator/
+│       ├── autonomous_client.py    # Python agent: safe + destructive payloads
+│       ├── safe_demo.py            # Quick safe payload demo
+│       ├── destructive_demo.py     # Quick destructive payload demo
+│       └── requirements.txt
 │
 ├── docker-compose.yml              # proxy + dashboard containers
 └── package.json                    # NPM workspaces root
@@ -386,7 +382,7 @@ The dashboard is a Next.js 16 app using the App Router. Key patterns:
 
 3. **Real-time updates**: The `useQueuePolling` hook opens an `EventSource` to `/api/proxy/queue/events`. When SSE is connected, polling slows to 10s (backup). If SSE fails, fast polling (1.5s) takes over.
 
-4. **Auth flow**: `src/proxy.ts` wires Auth0 middleware into Next.js 16's proxy file convention. This enables `/auth/login`, `/auth/logout`, `/auth/callback`, `/auth/profile` routes. The `useAuthProfile` hook checks login state and can redirect to `/auth/login`.
+4. **Auth flow**: `src/middleware.ts` wires Auth0 middleware into Next.js. This enables `/auth/login`, `/auth/logout`, `/auth/callback`, `/auth/profile` routes. The `useAuthProfile` hook checks login state and shows a login overlay if not authenticated.
 
 5. **UI components**: The dashboard renders a dark SOC-themed interface with ForensicCards (threat details + approve/deny), a ConfirmModal (styled replacement for `window.confirm`), an AgentSimulator (dev payload injection), an AuditLog (collapsible decision history), and toast notifications.
 
@@ -400,7 +396,7 @@ The dashboard is a Next.js 16 app using the App Router. Key patterns:
 | `JWT Verification failed: Invalid Compact JWS` | Dashboard sends an Auth0 opaque token that the backend can't verify as a JWT | Ensure the API proxy uses `ADMIN_SECRET` in dev mode (default behavior after latest fix) |
 | Backend 500 on `/proxy/execute` | Usually a JSON parse error (PowerShell escaping) or missing `.env` file | Use a file for the payload (`-d @payload.json`), verify `.env` is loaded |
 | Dashboard 500 with `lightningcss` error | Missing native binary (npm hoisting bug in monorepos on Windows) | `cd apps/dashboard && npm install @tailwindcss/oxide-win32-x64-msvc lightningcss-win32-x64-msvc` |
-| `Both middleware.ts and proxy.ts detected` | Next.js 16 only allows one | Delete `src/middleware.ts`, keep `src/proxy.ts` |
+| Dashboard auth routes return 404 | Middleware file missing or misnamed | Ensure `src/middleware.ts` exists (not `proxy.ts`) |
 | Jest fails with `jose` import error | ESM/CJS incompatibility | Ensure `babel.config.js` exists in `apps/proxy` |
 | Dashboard shows "Gateway unreachable" | Backend not running on expected port | Start the proxy: `cd apps/proxy && node server.js` |
 | SSE not connecting | Check network tab for `/api/proxy/queue/events` | Ensure backend is running, check CORS `ALLOWED_ORIGINS` includes dashboard URL |
@@ -459,9 +455,13 @@ pip install requests
 python autonomous_client.py
 ```
 
-### `scripts/pipelines/hackathon_pipeline.py`
+### `scripts/simulator/safe_demo.py` / `destructive_demo.py`
 
-A separate multi-model ideation pipeline used during hackathon planning. Not part of the Midosoc product. Uses instructor + litellm to orchestrate structured outputs from Gemini, GPT-4o, and Claude.
+Short single-purpose scripts for demo recording. `safe_demo.py` sends a safe payload and prints the instant response. `destructive_demo.py` sends a destructive payload, waits for human approval, then calls `/external/execute` with the vault token.
+
+```bash
+PROXY_URL=https://your-proxy-url ADMIN_SECRET=your-secret python3 scripts/simulator/destructive_demo.py
+```
 
 ---
 
