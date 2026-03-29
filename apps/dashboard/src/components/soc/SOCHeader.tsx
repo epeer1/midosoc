@@ -20,6 +20,7 @@ export function SOCHeader({ queueLength, user, isAuthenticated, apiUrl }: SOCHea
 
   let hostStr = "";
   try { hostStr = new URL(apiUrl).host; } catch(e) {}
+  if (hostStr === "localhost:3001" || !hostStr) hostStr = "midosoc-proxy";
 
   return (
     <header className="border-b border-neutral-900 bg-black/50 px-6 py-4 flex items-center justify-between backdrop-blur-md sticky top-0 z-40">
