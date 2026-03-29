@@ -6,11 +6,11 @@ async function proxyRequest(req: Request, path: string[], method: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   try {
-    // In development, always use admin secret for backend communication
-    // In production, use the Auth0 access token from the session
+    // Use ADMIN_SECRET when auth is skipped or in development
+    // In production with auth enabled, use the Auth0 access token from the session
     let token: string | null = null;
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.SKIP_AUTH === 'true' || process.env.NODE_ENV !== 'production') {
       token = process.env.ADMIN_SECRET || 'local_dev_secret';
     } else {
       try {

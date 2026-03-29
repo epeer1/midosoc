@@ -7,15 +7,16 @@ export async function GET() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   let token: string | null = null;
-  try {
-    const session = await auth0.getSession();
-    token = session?.tokenSet?.accessToken ?? null;
-  } catch (e) {
-    // Auth0 session not available
-  }
 
-  if (!token && process.env.NODE_ENV !== 'production') {
+  if (process.env.SKIP_AUTH === 'true' || process.env.NODE_ENV !== 'production') {
     token = process.env.ADMIN_SECRET || 'local_dev_secret';
+  } else {
+    try {
+      const session = await auth0.getSession();
+      token = session?.tokenSet?.accessToken ?? null;
+    } catch (e) {
+      // Auth0 session not available
+    }
   }
 
   if (!token) {

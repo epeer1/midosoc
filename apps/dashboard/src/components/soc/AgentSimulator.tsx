@@ -17,7 +17,7 @@ export function AgentSimulator({ apiUrl, showToast }: AgentSimulatorProps) {
     setIsSimulating(true);
     try {
       const payload = JSON.parse(simPayload);
-      const res = await fetch(`${apiUrl}/proxy/execute`, {
+      const res = await fetch(`/api/proxy/proxy/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -30,10 +30,9 @@ export function AgentSimulator({ apiUrl, showToast }: AgentSimulatorProps) {
           showToast("Simulation payload dispatched successfully", "success");
       }
     } catch(e: any) {
-      showToast(`Simulation failed: Make sure ${apiUrl} is running.`, "error");
+      showToast(`Simulation failed: ${e.message}`, "error");
     } finally {
       setIsSimulating(false);
-      setSimPayload('{\n  "agent_id": "nexus-09",\n  "action": "get_weather",\n  "target": "NYC",\n  "reasoning": "Checking local climate"\n}');
     }
   };
 

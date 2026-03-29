@@ -32,15 +32,20 @@ export function SOCHeader({ queueLength, user, isAuthenticated, apiUrl }: SOCHea
           <h1 className="text-sm font-bold tracking-[0.2em] text-white uppercase">MIDOSOC Command Center</h1>
           <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-0.5">Powered by Auth0 Token Vault</p>
         </div>
+        {queueLength > 0 && (
+          <span className="ml-2 px-2.5 py-1 rounded bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.5)] animate-pulse">
+            {queueLength} {queueLength === 1 ? 'Threat' : 'Threats'}
+          </span>
+        )}
       </div>
       <div className="flex items-center gap-8 text-xs text-neutral-500">
          {isAuthenticated && user && (
           <div className="hidden md:flex flex-col items-end">
             <span className="uppercase tracking-widest text-[9px] mb-0.5 text-emerald-500/70">Authenticated SOC Analyst</span>
             <span className="text-white font-semibold flex items-center gap-2">
-                <img src={user.picture} alt={user.name} className="w-4 h-4 rounded-full border border-neutral-700" />
+                {user.picture && <img src={user.picture} alt={user.name} className="w-4 h-4 rounded-full border border-neutral-700" />}
                 {user.email || user.name}
-                <a href="/auth/logout" className="ml-2 text-[9px] text-neutral-500 hover:text-red-400 uppercase tracking-widest transition-colors">Sign Out</a>
+                {!process.env.NEXT_PUBLIC_SKIP_AUTH && <a href="/auth/logout" className="ml-2 text-[9px] text-neutral-500 hover:text-red-400 uppercase tracking-widest transition-colors">Sign Out</a>}
             </span>
           </div>
         )}

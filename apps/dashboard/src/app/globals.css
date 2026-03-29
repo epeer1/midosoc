@@ -136,5 +136,5 @@
 }
 
 .midosoc-threat-pulse {
-  animation: threat-pulse 2s ease-in-out 1;
+  animation: threat-pulse 2s ease-in-out infinite;
 }

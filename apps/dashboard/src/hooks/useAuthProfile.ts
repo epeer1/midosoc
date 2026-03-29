@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 
+const SKIP_AUTH = process.env.NEXT_PUBLIC_SKIP_AUTH === 'true';
+
 export function useAuthProfile() {
-  const [user, setUser] = useState<any>(null);
-  const [authLoading, setAuthLoading] = useState(true);
+  const [user, setUser] = useState<any>(SKIP_AUTH ? { name: 'SOC Analyst', email: 'analyst@midosoc.dev' } : null);
+  const [authLoading, setAuthLoading] = useState(!SKIP_AUTH);
   
   const checkAuth = async () => {
+    if (SKIP_AUTH) return true;
     try {
       const res = await fetch('/auth/profile');
       if (res.ok) {
@@ -21,10 +24,11 @@ export function useAuthProfile() {
   };
 
   useEffect(() => {
-    checkAuth();
+    if (!SKIP_AUTH) checkAuth();
   }, []);
 
   const ensureLoggedIn = async (): Promise<boolean> => {
+    if (SKIP_AUTH) return true;
     if (user) return true;
     const isLoggedIn = await checkAuth();
     if (!isLoggedIn) {
@@ -34,5 +38,5 @@ export function useAuthProfile() {
     return true;
   };
 
-  return { user, isAuthenticated: !!user, ensureLoggedIn, authLoading };
+  return { user, isAuthenticated: SKIP_AUTH || !!user, ensureLoggedIn, authLoading };
 }

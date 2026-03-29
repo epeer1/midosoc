@@ -12,3 +12,7 @@
 {"timestamp":"2026-03-29T08:29:35.575Z","requestId":"45eb779a-0a3d-4348-925e-3f859b395582","decision":"approved","analyst":"admin"}
 {"timestamp":"2026-03-29T08:29:35.584Z","requestId":"628fe74f-3402-4cb6-8b9b-f6ed6f8eb2f8","decision":"denied","analyst":"admin"}
 {"timestamp":"2026-03-29T08:30:31.552Z","requestId":"31224e5b-3fdb-4133-84b6-94f8a50ec5b2","action":"delete_database","decision":"approved","analyst":"admin","riskLevel":"CRITICAL_LLM_AI_CLASSIFICATION","confidenceScore":95}
+{"timestamp":"2026-03-29T08:36:15.581Z","requestId":"8d110962-f5e4-4749-a6b9-000d19b8949b","decision":"approved","analyst":"admin"}
+{"timestamp":"2026-03-29T08:36:15.589Z","requestId":"88f97154-8dfb-4689-abc6-6cc9094bd2b3","decision":"denied","analyst":"admin"}
+{"timestamp":"2026-03-29T08:43:25.585Z","requestId":"345b6c25-6f16-44ca-8fa1-cb08c72a3fd7","action":"delete_database","decision":"approved","analyst":"admin","riskLevel":"CRITICAL_LLM_AI_CLASSIFICATION","confidenceScore":95}
+{"timestamp":"2026-03-29T08:49:14.271Z","requestId":"bd3bf61e-303f-494f-a034-cac80147045d","action":"delete_database","decision":"approved","analyst":"admin","riskLevel":"CRITICAL_LLM_AI_CLASSIFICATION","confidenceScore":95}
