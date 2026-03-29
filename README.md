@@ -1,5 +1,7 @@
 # Midosoc — Zero-Trust Gateway for Autonomous AI Agents
 
+**[📺 Watch the Hackathon Demo Video on YouTube](https://www.youtube.com/watch?v=9IYZJI6JA5E)**
+
 Midosoc is a security middlebox that sits between autonomous AI agents (LangChain, AutoGPT, custom LLM tools, etc.) and the actions they want to execute. It enforces human-in-the-loop authorization for destructive operations using a real-time SOC analyst dashboard. Safe actions pass through instantly. Destructive actions are suspended—socket held open in memory—until a human approves or denies them through the dashboard, at which point an Auth0 M2M vault token is issued and returned to the agent.
 
 ---
